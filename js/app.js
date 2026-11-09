@@ -46,7 +46,10 @@ const App = {
       this.currentMode = 'teacher';
     }
 
-    // หากมีการตั้งค่า Google Sheets URL ไว้แล้ว ให้ดึงข้อมูลล่าสุดมาอัปเดตอัตโนมัติ
+    // แสดงผลหน้าจอเริ่มต้นทันทีระหว่างรอโหลดจาก Google Sheets
+    this.renderAll();
+
+    // ดึงข้อมูลล่าสุดจาก Google Sheets มาอัปเดตอัตโนมัติ
     const config = GradebookAPI.getConfig();
     if (config.scriptUrl) {
       this.setSyncStatus('syncing', 'กำลังโหลดข้อมูลล่าสุดจาก Google Sheets...');
@@ -57,6 +60,7 @@ const App = {
           this.activeCourseId = this.state.courses[0].id;
         }
         this.setSyncStatus('synced', 'ซิงค์กับ Google Sheets ล่าสุดแล้ว');
+        this.renderAll();
       } else if (res.ok && res.emptyRemote) {
         this.setSyncStatus('idle', 'เชื่อมต่อแล้ว (ยังไม่มีข้อมูลบน Sheet กดซิงค์เพื่ออัปโหลด)');
       } else {
@@ -65,8 +69,6 @@ const App = {
     } else {
       this.setSyncStatus('local', 'โหมดทดลองใช้งานในเครื่อง (คลิก "เชื่อม Google Sheets" เพื่อซิงค์ออนไลน์)');
     }
-
-    this.renderAll();
 
     if (studentIdParam && this.currentMode === 'student') {
       const input = document.getElementById('studentLookupInput');

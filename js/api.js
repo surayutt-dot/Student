@@ -4,6 +4,9 @@
  * ============================================================================
  */
 
+// ลิงก์ Web App URL ของอาจารย์ (ฝังไว้ในโค้ดเพื่อให้ทุกเครื่องและมือถือเชื่อม Google Sheets อัตโนมัติทันที)
+const DEFAULT_GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbypDku9so6iV0fiVxD86O9vjt64_BbBHIl_7XLXli4qYyCtD0Wbc1w9hMpEOD1xrCDr9Q/exec';
+
 const STORAGE_KEYS = {
   STATE: 'smart_gradebook_state_v1',
   CONFIG: 'smart_gradebook_config_v1',
@@ -20,8 +23,14 @@ const GradebookAPI = {
     const urlParams = new URLSearchParams(window.location.search);
     const apiFromUrl = urlParams.get('api');
 
+    // หากเปิดผ่านลิงก์ที่มี ?api=... ให้บันทึกไว้ในเครื่อง (เช่น มือถือ) อัตโนมัติทันที
+    if (apiFromUrl && apiFromUrl !== parsed.scriptUrl) {
+      parsed.scriptUrl = apiFromUrl;
+      localStorage.setItem(STORAGE_KEYS.CONFIG, JSON.stringify(parsed));
+    }
+
     return {
-      scriptUrl: apiFromUrl || parsed.scriptUrl || '',
+      scriptUrl: apiFromUrl || parsed.scriptUrl || DEFAULT_GOOGLE_SCRIPT_URL || '',
       localTeacherPin: parsed.localTeacherPin || '1234',
       autoSync: parsed.autoSync !== undefined ? parsed.autoSync : true,
       lastSyncedAt: parsed.lastSyncedAt || null
